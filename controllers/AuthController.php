@@ -18,8 +18,16 @@ class AuthController {
         if ($result) {
             // Login successful
             $_SESSION['username'] = $username;
-            // You can also set other session variables as needed, e.g., user type
-            header("Location: ../views/parcels/list.php"); // Redirect to a dashboard or home page
+            // Assuming the user role is also stored in session or returned by login method
+            // For example, let's say it's stored in session
+            $userRole = $_SESSION['user_type']; // Make sure this is set in your login method
+
+            // Redirect based on user role
+            if ($userRole == 'admin') {
+                header("Location: ../dashboard.php");
+            } else if ($userRole == 'delivery_user') {
+                header("Location: ../dashboard_delivery.php"); // Assuming you have a separate dashboard for delivery users
+            }
             exit();
         } else {
             // Login failed

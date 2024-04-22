@@ -55,5 +55,11 @@ class ParcelModel {
         $stmt->execute([$deliveryUser]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    // Method to get total parcels
+    public function getTotalParcels() {
+        $stmt = $this->db->query("SELECT COUNT(*) FROM parcels");
+        return $stmt->fetchColumn(); // fetchColumn() returns a single value directly
+    }
 }
 ?>
