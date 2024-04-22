@@ -1,6 +1,9 @@
 <?php
-require_once 'UserModel.php';
-require_once 'DatabaseConnection.php';
+require_once '../models/UserModel.php';
+require_once '../models/DatabaseConnection.php';
+
+// Creating a PDO connection
+$pdoConnection = DatabaseConnection::getPDOConnection();
 
 class UserController {
     private $userModel;
@@ -11,7 +14,17 @@ class UserController {
 
     public function createUser($username, $password, $user_type) {
         $result = $this->userModel->createUser($username, $password, $user_type);
-        echo $result ? 'User created successfully' : 'Failed to create user';
+        if ($result) {
+            // Check user type and redirect accordingly
+            if ($user_type === 'admin') {
+                header('Location: ../views/users/list.php');
+            } else if ($user_type === 'delivery_user') {
+                header('Location: ../views/parcels/list.php');
+            }
+            exit; // Ensure no further execution after redirection
+        } else {
+            echo 'Failed to create user';
+        }
     }
 
     public function getUserById($user_id) {
@@ -35,9 +48,17 @@ class UserController {
     }
 }
 
-// Creating a PDO connection
-$pdoConnection = DatabaseConnection::getPDOConnection();
+// Check if the script is accessed via a POST request
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Instantiate the UserController with the database connection
+    $userController = new UserController($pdoConnection);
 
-// Passing the PDO connection to your class
-$UserModel = new UserModel($pdoConnection);
+    // Retrieve form data
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    $user_type = $_POST['user_type'];
+
+    // Call createUser method
+    $userController->createUser($username, $password, $user_type);
+}
 ?>

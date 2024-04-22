@@ -1,11 +1,14 @@
 <?php
-require_once 'PointModel.php';
+require_once '../models/PointModel.php';
+require_once '../models/DatabaseConnection.php';
+// Creating a PDO connection
+$pdoConnection = DatabaseConnection::getPDOConnection();
 
 class PointController {
     private $recipientModel;
 
     public function __construct($dbConnection) {
-        $this->recipientModel = new RecipientModel($dbConnection);
+        $this->recipientModel = new PointModel($dbConnection);
     }
 
     public function createRecipient($recipient_name, $recipient_address, $recipient_postalcode, $longitude_point, $latitude_point) {
@@ -31,6 +34,27 @@ class PointController {
     public function getAllRecipients() {
         $recipients = $this->recipientModel->getAllRecipients();
         echo json_encode($recipients);
+    }
+}
+
+// Check if the script is accessed via a POST request
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $pointController = new PointController($pdoConnection);
+
+    // Retrieve form data
+    $recipient_name = $_POST['recipient_name'];
+    $recipient_address = $_POST['recipient_address'];
+    $recipient_postalcode = $_POST['recipient_postalcode'];
+    $longitude_point = $_POST['longitude_point'];
+    $latitude_point = $_POST['latitude_point'];
+    $operation = $_POST['operation'] ?? ''; // Get the operation
+
+    // Check if it's a create or update operation
+    if ($operation === 'create') {
+        $pointController->createRecipient($recipient_name, $recipient_address, $recipient_postalcode, $longitude_point, $latitude_point);
+    } elseif ($operation === 'update') {
+        $point_id = $_POST['point_id']; // Make sure to retrieve this for updates
+        $pointController->updateRecipient($point_id, $recipient_name, $recipient_address, $recipient_postalcode, $longitude_point, $latitude_point);
     }
 }
 ?>
