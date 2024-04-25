@@ -63,7 +63,7 @@ $recipients = $pointModel->getAllRecipients();
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item">
-                <a class="nav-link" href="">
+                <a class="nav-link" href="../../dashboard.php">
                     
                     <span>Dashboard</span></a>
             </li>
@@ -71,6 +71,11 @@ $recipients = $pointModel->getAllRecipients();
             <li class="nav-item">
                 <a class="nav-link" href="create.php">
                     <span>Create Recipient</span></a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="../../controllers/AuthController.php?action=logout">
+                    <i class="fas fa-fw fa-boxes"></i>
+                    <span>Logout</span></a>
             </li>
         </ul>
         <!-- End of Sidebar -->
