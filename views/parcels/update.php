@@ -221,25 +221,34 @@ $recipients = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <div class="table-responsive">
                             <form action="../../controllers/ParcelController.php" method="post">
                                 <input type="hidden" name="parcel_id" value="<?php echo htmlspecialchars($parcel['parcel_id']); ?>">
+                                <input type="hidden" name="user_type" value="<?php echo $_SESSION['user_type']; ?>">
                                 <input type="hidden" name="operation" value="update">
-                                Delivery User: 
-                                <select name="delivery_user">
-                                    <?php foreach ($deliveryUsers as $user): ?>
-                                    <option value="<?php echo htmlspecialchars($user['username']); ?>" <?php if ($user['username'] == $parcel['delivery_user']) echo 'selected'; ?>>
-                                        <?php echo htmlspecialchars($user['username']); ?>
-                                    </option>
-                                    <?php endforeach; ?>
-                                </select><br>
                                 
-                                Recipient:
-                                <select name="recipient">
-                                    <?php foreach ($recipients as $recipient): ?>
-                                    <option value="<?php echo htmlspecialchars($recipient['point_id']); ?>" <?php if ($recipient['point_id'] == $parcel['recipient_id']) echo 'selected'; ?>>
-                                        <?php echo htmlspecialchars($recipient['recipient_name']); ?>
-                                    </option>
-                                    <?php endforeach; ?>
+
+                                <?php if ($_SESSION['user_type'] == 'admin'): ?>
+                                    Delivery User: 
+                                    <select name="delivery_user">
+                                        <?php foreach ($deliveryUsers as $user): ?>
+                                        <option value="<?php echo htmlspecialchars($user['username']); ?>" <?php if ($user['username'] == $parcel['delivery_user']) echo 'selected'; ?>>
+                                            <?php echo htmlspecialchars($user['username']); ?>
+                                        </option>
+                                        <?php endforeach; ?>
+                                    </select><br>
+                                    Recipient:
+                                    <select name="recipient">
+                                        <?php foreach ($recipients as $recipient): ?>
+                                        <option value="<?php echo htmlspecialchars($recipient['point_id']); ?>" <?php if ($recipient['point_id'] == $parcel['recipient_id']) echo 'selected'; ?>>
+                                            <?php echo htmlspecialchars($recipient['recipient_name']); ?>
+                                        </option>
+                                        <?php endforeach; ?>
+                                    </select><br>
+                                <?php endif; ?>
+                                Status:
+                                <select name="status">
+                                    <option value="Pending" <?php if ($parcel['parcel_status'] == 'Pending') echo 'selected'; ?>>Pending</option>
+                                    <option value="In Transit" <?php if ($parcel['parcel_status'] == 'In Transit') echo 'selected'; ?>>In Transit</option>
+                                    <option value="Delivered" <?php if ($parcel['parcel_status'] == 'Delivered') echo 'selected'; ?>>Delivered</option>
                                 </select><br>
-                                
                                 <input type="submit" value="Update Parcel">
                             </form>
                             </div>

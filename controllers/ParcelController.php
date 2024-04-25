@@ -21,8 +21,15 @@ class ParcelController {
         echo $parcel ? json_encode($parcel) : 'Parcel not found';
     }
 
-    public function updateParcel($parcel_id, $delivery_user, $recipient_id) {
-        $result = $this->parcelModel->updateParcel($parcel_id, $delivery_user, $recipient_id);
+    public function updateParcel($parcel_id, $delivery_user, $recipient_id, $parcel_status, $user_type) {
+        if ($user_type === 'admin') {
+            $result = $this->parcelModel->updateParcel($parcel_id, $delivery_user, $recipient_id, $parcel_status);
+        } else if ($user_type === 'delivery_user') {
+            $result = $this->parcelModel->updateParcelStatusOnly($parcel_id, $parcel_status);
+        } else {
+            echo 'Unauthorized operation';
+            return;
+        }
         echo $result ? 'Parcel updated successfully' : 'Failed to update parcel';
     }
 
@@ -47,6 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Retrieve common fields from the POST request
     $delivery_user = $_POST['delivery_user'] ?? '';
     $recipient_id = $_POST['recipient'] ?? '';
+    $parcel_status = $_POST['status'] ?? '';
     $operation = $_POST['operation'] ?? '';
 
     // Determine the operation to perform
@@ -56,8 +64,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif ($operation === 'update') {
         // Make sure to retrieve the parcel_id for update operations
         $parcel_id = $_POST['parcel_id'] ?? '';
+        $user_type = $_POST['user_type'] ?? '';
         // Call the updateParcel method with the form data
-        $parcelController->updateParcel($parcel_id, $delivery_user, $recipient_id);
+        $parcelController->updateParcel($parcel_id, $delivery_user, $recipient_id, $parcel_status, $user_type);
     }
 
     // Optionally, redirect to a confirmation page or back to the form

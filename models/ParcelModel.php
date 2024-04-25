@@ -15,17 +15,24 @@ class ParcelModel {
 
     // Retrieve a parcel by ID
     public function getParcelById($parcel_id) {
-        $sql = "SELECT parcel_id, delivery_user, recipient_id FROM parcels WHERE parcel_id = ?";
+        $sql = "SELECT parcel_id, delivery_user, parcel_status, recipient_id FROM parcels WHERE parcel_id = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$parcel_id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     // Update a parcel's delivery user and recipient
-    public function updateParcel($parcel_id, $delivery_user, $recipient_id) {
-        $sql = "UPDATE parcels SET delivery_user = ?, recipient_id = ? WHERE parcel_id = ?";
+    public function updateParcel($parcel_id, $delivery_user, $recipient_id,  $parcel_status) {
+        $sql = "UPDATE parcels SET delivery_user = ?, recipient_id = ?, parcel_status = ? WHERE parcel_id = ?";
         $stmt = $this->db->prepare($sql);
-        return $stmt->execute([$delivery_user, $recipient_id, $parcel_id]);
+        return $stmt->execute([$delivery_user, $recipient_id, $parcel_status, $parcel_id]);
+    }
+
+    // Update only a parcel's status
+    public function updateParcelStatusOnly($parcel_id, $parcel_status) {
+        $sql = "UPDATE parcels SET parcel_status = ? WHERE parcel_id = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$parcel_status, $parcel_id]);
     }
 
     // Delete a parcel
@@ -37,7 +44,7 @@ class ParcelModel {
 
     // List all parcels
     public function getAllParcels() {
-        $sql = "SELECT parcels.parcel_id, parcels.delivery_user, recipients.recipient_name 
+        $sql = "SELECT parcels.parcel_id, parcels.delivery_user, parcels.parcel_status, recipients.recipient_name 
                 FROM parcels 
                 JOIN recipients ON parcels.recipient_id = recipients.point_id";
         $stmt = $this->db->prepare($sql);
@@ -47,7 +54,7 @@ class ParcelModel {
 
     // Fetch parcels assigned to a specific delivery user
     public function getParcelsByDeliveryUser($deliveryUser) {
-        $sql = "SELECT parcels.parcel_id, parcels.delivery_user, parcels.status, recipients.recipient_name 
+        $sql = "SELECT parcels.parcel_id, parcels.delivery_user, parcels.parcel_status, recipients.recipient_name 
                 FROM parcels 
                 JOIN recipients ON parcels.recipient_id = recipients.point_id
                 WHERE parcels.delivery_user = ?";
