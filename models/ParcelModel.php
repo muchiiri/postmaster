@@ -47,7 +47,7 @@ class ParcelModel {
 
     // Fetch parcels assigned to a specific delivery user
     public function getParcelsByDeliveryUser($deliveryUser) {
-        $sql = "SELECT parcels.parcel_id, parcels.delivery_user, recipients.recipient_name 
+        $sql = "SELECT parcels.parcel_id, parcels.delivery_user, parcels.status, recipients.recipient_name 
                 FROM parcels 
                 JOIN recipients ON parcels.recipient_id = recipients.point_id
                 WHERE parcels.delivery_user = ?";

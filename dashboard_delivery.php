@@ -233,14 +233,16 @@ $deliveryUsersCount = count(array_filter($totalUsers, function ($user) {
                                         <tr>
                                         <th>Delivery User</th>
                                         <th>Recipient</th>
-                                        <!-- <th>Action</th> -->
+                                        <th>Status</th>
+                                        <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
                                         <tr>
                                         <th>Delivery User</th>
                                         <th>Recipient</th>
-                                        <!-- <th>Action</th> -->
+                                        <th>Status</th>
+                                        <th>Action</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
@@ -248,6 +250,7 @@ $deliveryUsersCount = count(array_filter($totalUsers, function ($user) {
                                         <tr>
                                             <td><?php echo htmlspecialchars($parcel['delivery_user']); ?></td>
                                             <td><?php echo htmlspecialchars($parcel['recipient_name']); ?></td>
+                                            <td><?php echo htmlspecialchars($parcel['status']); ?></td>
                                             <!-- <td>
                                                 <a href="update.php?id=<?php echo htmlspecialchars($parcel['parcel_id']); ?>">Edit</a>
                                             </td> -->
