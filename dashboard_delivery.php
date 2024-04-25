@@ -354,20 +354,19 @@ $locations = $pointModel->getAllRecipients(); // Fetch all recipients with their
     });
 
     var locations = <?php echo json_encode($locations); ?>;
-    console.log("Locations:", locations); // Debugging output to check what's being loaded
+    console.log("Parsed Locations:", locations);
 
     locations.forEach(function(location) {
-        console.log("Coordinates:", location.latitude_point, location.longitude_point); // More debugging to check each coordinate
-        var latLng = new google.maps.LatLng(
-            parseFloat(location.latitude_point.trim()), // Trim spaces and parse as float
-            parseFloat(location.longitude_point.trim())  // Trim spaces and parse as float
-        );
-
-        new google.maps.Marker({
-            position: latLng,
+        console.log("Attempting to create marker for:", location.recipient_name);
+        console.log("Coordinates:", parseFloat(location.latitude_point.trim()), parseFloat(location.longitude_point.trim()));
+        
+        var marker = new google.maps.Marker({
+            position: new google.maps.LatLng(parseFloat(location.longitude_point.trim()), parseFloat(location.latitude_point.trim())),
             map: map,
             title: location.recipient_name
         });
+
+        console.log("Marker created:", marker);
     });
 }
 </script>
