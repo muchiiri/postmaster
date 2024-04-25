@@ -75,7 +75,7 @@ if (isset($_SESSION['user_type']) && $_SESSION['user_type'] == 'delivery_user') 
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item">
-                <a class="nav-link" href="">
+                <a class="nav-link" href="../../dashboard.php">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
