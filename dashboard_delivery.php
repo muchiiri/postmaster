@@ -19,6 +19,8 @@ $totalUsers = $userModel->getAllUsers(); // This method needs to be defined in y
 $deliveryUsersCount = count(array_filter($totalUsers, function ($user) {
     return $user['user_type'] === 'delivery_user';
 }));
+
+$locations = $pointModel->getAllRecipients(); // Fetch all recipients with their locations
 ?>
 
 <!DOCTYPE html>
@@ -233,14 +235,18 @@ $deliveryUsersCount = count(array_filter($totalUsers, function ($user) {
                                         <tr>
                                         <th>Delivery User</th>
                                         <th>Recipient</th>
-                                        <!-- <th>Action</th> -->
+                                        <th>Status</th>
+                                        <th>QR Code</th>
+                                        <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
                                         <tr>
                                         <th>Delivery User</th>
                                         <th>Recipient</th>
-                                        <!-- <th>Action</th> -->
+                                        <th>Status</th>
+                                        <th>QR Code</th>
+                                        <th>Action</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
@@ -248,14 +254,27 @@ $deliveryUsersCount = count(array_filter($totalUsers, function ($user) {
                                         <tr>
                                             <td><?php echo htmlspecialchars($parcel['delivery_user']); ?></td>
                                             <td><?php echo htmlspecialchars($parcel['recipient_name']); ?></td>
-                                            <!-- <td>
-                                                <a href="update.php?id=<?php echo htmlspecialchars($parcel['parcel_id']); ?>">Edit</a>
-                                            </td> -->
+                                            <td><?php echo htmlspecialchars($parcel['parcel_status']); ?></td>
+                                            <td>
+                                                <div id="qrcode-<?php echo $parcel['parcel_id']; ?>" style="width: 128px; height: 128px;"></div>
+                                            </td>
+                                            <td>
+                                                <a href="./views/parcels/update.php?parcel_id=<?php echo htmlspecialchars($parcel['parcel_id']); ?>" class="btn btn-info">Edit</a>
+                                            </td>
                                         </tr>
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                           Map
+                        </div>
+                        <div class="card-body">
+                        <div id="map" style="width:100%; height:400px"></div>
                         </div>
                     </div>
 
@@ -309,6 +328,49 @@ $deliveryUsersCount = count(array_filter($totalUsers, function ($user) {
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        <?php foreach ($parcels as $parcel): ?>
+        var qrText = 'Parcel ID: ' + '<?php echo $parcel['parcel_id']; ?>' +
+                     '\nDelivery User: ' + '<?php echo $parcel['delivery_user']; ?>' +
+                     '\nRecipient: ' + '<?php echo $parcel['recipient_name']; ?>' +
+                     '\nStatus: ' + '<?php echo $parcel['parcel_status']; ?>';
+        new QRCode(document.getElementById('qrcode-<?php echo $parcel['parcel_id']; ?>'), {
+            text: qrText,
+            width: 128,
+            height: 128
+        });
+        <?php endforeach; ?>
+    });
+    </script>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBjVpB9eq5f51--XJJObhcATR8XCjJMkM8&callback=initMap"></script>
+<script>
+    function initMap() {
+    var map = new google.maps.Map(document.getElementById('map'), {
+        center: new google.maps.LatLng(-1.2180603, 36.8766577),
+        zoom: 10
+    });
+
+    var locations = <?php echo json_encode($locations); ?>;
+    console.log("Parsed Locations:", locations);
+
+    locations.forEach(function(location) {
+        console.log("Attempting to create marker for:", location.recipient_name);
+        console.log("Coordinates:", parseFloat(location.latitude_point.trim()), parseFloat(location.longitude_point.trim()));
+        
+        var marker = new google.maps.Marker({
+            position: new google.maps.LatLng(parseFloat(location.longitude_point.trim()), parseFloat(location.latitude_point.trim())),
+            map: map,
+            title: location.recipient_name
+        });
+
+        console.log("Marker created:", marker);
+    });
+}
+</script>
+
     <!-- Bootstrap core JavaScript-->
     <script src="./views/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
@@ -323,6 +385,9 @@ $deliveryUsersCount = count(array_filter($totalUsers, function ($user) {
     <!-- Page level custom scripts -->
     <script src="./views/assets/js/demo/chart-area-demo.js"></script>
     <script src="./views/assets/js/demo/chart-pie-demo.js"></script>
+
+    
+
 
 </body>
 </html>
